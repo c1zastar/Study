@@ -1,0 +1,230 @@
+```
+#include <iostream>
+#include <string>
+using namespace std;
+const int MAX=1000;
+
+//联系人结构体
+struct Person{
+    string name;
+    int gender;
+    int age;
+    int phoneNum;
+    string address;
+};
+//通讯录结构体
+struct addressBook{
+    Person array[MAX];
+    int size;
+};
+
+//函数声名
+void showMenu();//菜单界面
+void quit(); //0.退出通讯录
+void addPerson(addressBook* p); //1.添加联系人
+void showPerson(const addressBook *p); //2.显示联系人
+void deletePerson(addressBook *p,string d_name);//3.删除联系人
+int findPerson (addressBook *p,string f_name); //4.查找联系人
+void modifyPerson(addressBook *p,string m_name);//5.修改联系人
+void cleanPerson(addressBook *p);//6.清除联系人
+
+//主函数
+int main(){
+    int select;
+    addressBook user1;
+    user1.size=0;
+    while(true){
+        showMenu();
+        cin >> select;
+        switch(select){
+            case 1:
+                addPerson(&user1);
+                system("pause");
+                system("cls");
+                break;
+            case 2:
+                showPerson(&user1);
+                system("pause");
+                system("cls");
+                break;
+            case 3:
+            {
+                string d_name;
+                cout << "请输入删除对象的姓名" << endl;
+                cin >> d_name;
+                deletePerson(&user1,d_name);
+                system("pause");
+                system("cls");
+                break;
+            }    
+            case 4:
+            {
+                string i_name;
+                cout << "请输入查找对象的姓名:" << endl;
+                cin >> i_name;
+                int f_result=findPerson(&user1,i_name);
+                if(f_result != -1){
+                    cout << "姓名: " << user1.array[f_result].name ;
+                    cout << " 性别: " << (user1.array[f_result].gender==1? "男":"女");
+                    cout << " 年龄: " << user1.array[f_result].age;
+                    cout << " 电话号码: " << user1.array[f_result].phoneNum;
+                    cout << " 地址: " << user1.array[f_result].address << endl;
+                }   
+                system("pause");
+                system("cls");               
+                break;
+            }
+            case 5:
+            {
+                string i_m_name;
+                cout << "请输入修改对象的姓名:" << endl;
+                cin >> i_m_name;
+                modifyPerson(&user1,i_m_name);
+                system("pause");
+                system("cls");
+                break;
+            }
+            case 6:
+                cleanPerson(&user1);
+                system("pause");
+                system("cls");
+                break;
+            case 0:
+                quit();
+                return 0;
+        }
+    }
+    system("pause");
+    return 0;
+}
+
+//菜单界面
+void showMenu(){
+    cout << "*************************" << endl;
+    cout << "***** 1、添加联系人 *****" << endl;
+    cout << "***** 2、显示联系人 *****" << endl;
+    cout << "***** 3、删除联系人 *****" << endl;
+    cout << "***** 4、查找联系人 *****" << endl;
+    cout << "***** 5、修改联系人 *****" << endl;
+    cout << "***** 6、清空联系人 *****" << endl;
+    cout << "***** 0、退出通讯录 *****" << endl;
+    cout << "*************************" << endl;
+
+}
+
+//0.退出通讯录
+void quit(){
+    cout << "已退出通讯录" << endl;
+    system("pause");
+}
+
+//1.添加联系人:依次写入
+void addPerson(addressBook *p){
+    cout << "姓名:" << endl;
+    cin >> p->array[p->size].name;
+    cout << "性别 (1--男,2--女):" << endl;
+    while(true){
+        cin >> p->array[p->size].gender;
+        if(p->array[p->size].gender!=1&&p->array[p->size].gender!=2){
+            cout << "输入错误,请重试:" <<endl;
+            continue;
+        }
+        else
+            break;
+    }
+    cout << "年龄:" << endl;
+    cin >> p->array[p->size].age;
+    cout << "电话号码:" << endl;
+    cin >> p->array[p->size].phoneNum;
+    cout << "地址:" << endl;
+    cin >> p->array[p->size].address;
+    p->size++;
+}
+
+//2.显示联系人
+void showPerson(const addressBook *p){
+    if(p->size==0){
+        cout << "请先输入联系人" << endl;
+        return;
+    }
+    for (int i=0;i<p->size;i++){
+        cout << "姓名: " << p->array[i].name ;
+        cout << " 性别: " << (p->array[i].gender==1? "男":"女");
+        cout << " 年龄: " << p->array[i].age;
+        cout << " 电话号码: " << p->array[i].phoneNum;
+        cout << " 地址: " << p->array[i].address << endl;
+    }
+   
+}
+
+//3.删除联系人
+void deletePerson (addressBook *p,string d_name){
+    int tagNum = findPerson(p,d_name);
+    if(tagNum==-1){
+        return;
+    }
+    else{
+        for(int i=tagNum;i<p->size;i++){
+            p->array[i]=p->array[i+1];
+        }
+        p->size--;
+        cout << "删除指定联系人成功" << endl;
+    }
+} 
+
+//4.查找联系人
+int findPerson (addressBook *p,string f_name){
+    int f_num =0;
+    if(p->size==0){
+        cout << "请先输入联系人" << endl;
+        return -1;
+    }
+    else{
+        for(;f_num<p->size;f_num++){
+            if(p->array[f_num].name==f_name){
+                break;
+            }
+            if(f_num==p->size-1){
+                cout << "查无此人" << endl;
+                return -1;
+            }
+        }
+    }
+    return f_num;
+}
+
+//5.修改联系人
+void modifyPerson(addressBook *p,string m_name){
+    int tagNum = findPerson(p,m_name);
+    if(tagNum==-1){
+        return;
+    }
+    else{
+        cout << "姓名:" << endl;
+        cin >> p->array[tagNum].name;
+        cout << "性别 (1--男,2--女):" << endl;
+        while(true){
+            cin >> p->array[tagNum].gender;
+            if(p->array[tagNum].gender!=1&&p->array[tagNum].gender!=2){
+                cout << "输入错误,请重试:" <<endl;
+                continue;
+            }
+            else
+                break;
+        }
+        cout << "年龄:" << endl;
+        cin >> p->array[tagNum].age;
+        cout << "电话号码:" << endl;
+        cin >> p->array[tagNum].phoneNum;
+        cout << "地址:" << endl;
+        cin >> p->array[tagNum].address;
+    }
+
+}
+
+//6.清空联系人
+void cleanPerson(addressBook* p){
+    p->size=0;
+    cout << "已清除联系人" <<endl;
+}
+```
